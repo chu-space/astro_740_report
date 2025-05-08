@@ -54,7 +54,7 @@ def H_n(coords, radius, samplebox, masses, n_cells=10000, delta_c=1.686, p=0.3, 
 means, variances, H3s, H4s, H5s, x_vals = [], [], [], [], [], []
 seed = 42 # For reproduciblility the seed is set at some arbirary constant
 for r in tqdm(radii, desc="Appending H_N"): # Test to see how long this process takes
-    mean, var, S3, S4, S5, b = S_n(coords, r, samplebox, masses, seed=seed)
+    mean, var, H3, H4, H5, b = H_n(coords, r, samplebox, masses, seed=seed)
     means.append(mean)
     variances.append(var)
     H3s.append(H3)

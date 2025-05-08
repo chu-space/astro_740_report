@@ -40,6 +40,7 @@ for i, n in enumerate(n_values):
 plt.xlabel(r"Bias Parameter $b$", fontsize=15)  # x-axis as Bias Parameter
 plt.ylabel(r"$H_n$", fontsize=15)
 plt.title("Moments of Halo Distribution (Approximate)", fontsize=17)
+plt.yscale('log')
 plt.legend()
 plt.tight_layout()
 plt.show()
