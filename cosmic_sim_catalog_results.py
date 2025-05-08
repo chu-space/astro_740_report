@@ -23,7 +23,7 @@ def ST_bias(nu, p=0.3, q=0.707, delta_c=1.686):
 # Generating statistics to get the higher moments of the halo distribution
 
 # Methodology: A counts in cell approach common in probing non-Gaussianity and the clustering properties of matter
-def S_n(coords, radius, samplebox, masses, n_cells=10000, delta_c=1.686, p=0.3, q=0.707, seed=42):
+def H_n(coords, radius, samplebox, masses, n_cells=10000, delta_c=1.686, p=0.3, q=0.707, seed=42):
     rng = np.random.default_rng(seed)
     centers = rng.uniform(0, samplebox, size=(n_cells, 3))
     tree = cKDTree(coords, boxsize=samplebox)
@@ -39,38 +39,38 @@ def S_n(coords, radius, samplebox, masses, n_cells=10000, delta_c=1.686, p=0.3, 
     kurt = kurtosis(counts, fisher=False) # Kurtosis
     mu5 = np.mean((counts - mean)**5) # 5th central moment
 
-    # Various S_n to probe this clustering property
-    S3 = skewness * (mean / var)**2 if var > 0 else np.nan
-    S4 = kurt * (mean / var)**3 if var > 0 else np.nan
-    S5 = mu5 / (var**4) if var > 0 else np.nan
+    # Various H_n to probe this clustering property
+    H3 = skewness * (mean / var)**2 if var > 0 else np.nan
+    H4 = kurt * (mean / var)**3 if var > 0 else np.nan
+    H5 = mu5 / (var**4) if var > 0 else np.nan
     M = masses  # (Msun/h)
     nu = delta_c / (var**0.5)
 
     bias = ST_bias(nu)
     b = bias * var # Compute b(M) * var
 
-    return mean, var, S3, S4, S5, b # Return the mean, variance, S3-5 values
+    return mean, var, H3, H4, H5, b # Return the mean, variance, H3-5 values
 
-means, variances, S3s, S4s, S5s, x_vals = [], [], [], [], [], []
+means, variances, H3s, H4s, H5s, x_vals = [], [], [], [], [], []
 seed = 42 # For reproduciblility the seed is set at some arbirary constant
-for r in tqdm(radii, desc="Appending S_N"): # Test to see how long this process takes
+for r in tqdm(radii, desc="Appending H_N"): # Test to see how long this process takes
     mean, var, S3, S4, S5, b = S_n(coords, r, samplebox, masses, seed=seed)
     means.append(mean)
     variances.append(var)
-    S3s.append(S3)
-    S4s.append(S4)
-    S5s.append(S5)
+    H3s.append(H3)
+    H4s.append(H4)
+    H5s.append(H5)
     x_vals.append(b)
 
 plt.figure(figsize=(8, 6))
-plt.plot(x_vals, ma.masked_invalid(S3s), 'o-', label='$S_3$ (Skewness)', color='blue') # H3
-plt.plot(x_vals, ma.masked_invalid(S4s), 's-', label='$S_4$ (Kurtosis)', color='green') # H4
-plt.plot(x_vals, ma.masked_invalid(S5s), 'd-', label='$S_5$ (5th Reduced Moment)', color='red') # H5
+plt.plot(x_vals, ma.masked_invalid(H3s), 'o-', label='$H_3$ (Skewness)', color='blue') # H3
+plt.plot(x_vals, ma.masked_invalid(H4s), 's-', label='$H_4$ (Kurtosis)', color='green') # H4
+plt.plot(x_vals, ma.masked_invalid(H5s), 'd-', label='$H_5$ (5th Reduced Moment)', color='red') # H5
 
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel(r'$b(M) \sigma^2$', fontsize=14)
-plt.ylabel(r'$S_N$ (Reduced Moments)', fontsize=14)
+plt.ylabel(r'$H_N$ (Reduced Moments)', fontsize=14)
 plt.title(f'Halo Distribution Moments', fontsize=17)
 plt.legend()
 plt.tight_layout()
